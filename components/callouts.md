@@ -1,5 +1,5 @@
 ---
-title: "Callout Components: Note, Warning, Tip, Info & Check"
+title: "Test Callout Components: Note, Warning, Tip, Info & Check"
 sidebarTitle: "Callouts"
 description: "Use Note, Warning, Tip, Info, and Check callout components in SBGDS to surface important information with clear visual urgency signals for your readers."
 ---
