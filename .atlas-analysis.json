@@ -1,0 +1,95 @@
+{
+  "projectType": "saas",
+  "projectName": "SBGDS",
+  "projectDescription": "SBGDS is a documentation platform that helps teams create, publish, and maintain beautiful, developer-friendly documentation sites.",
+  "theme": "luma",
+  "primaryColor": "#1be49c",
+  "lightColor": "#0c8c5c",
+  "darkColor": "#0c0c0c",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "core-concepts"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/writing-content",
+              "guides/navigation",
+              "guides/customization",
+              "guides/publishing"
+            ]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "components/overview",
+              "components/callouts",
+              "components/code-blocks",
+              "components/cards"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/settings",
+              "configuration/branding",
+              "configuration/integrations"
+            ]
+          },
+          {
+            "group": "Help",
+            "pages": [
+              "help/faq",
+              "help/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/authentication"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api-reference/pages",
+              "api-reference/deployments"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "MDX-based page authoring with rich components",
+    "Customizable branding and themes",
+    "Flexible navigation and sidebar configuration",
+    "Built-in API reference support",
+    "One-click publishing and deployment",
+    "AI-assisted writing tools",
+    "Contextual help integrations (ChatGPT, Claude, Perplexity)"
+  ],
+  "publicApiSurface": [
+    "docs.json configuration schema",
+    "MDX frontmatter fields (title, description, sidebarTitle, icon)",
+    "Navigation object (tabs, groups, pages, anchors)",
+    "Mintlify CLI: mint dev, mint validate, mint broken-links",
+    "Component library: Card, Tip, Steps, Step, CodeBlock, Callout",
+    "REST API: pages, deployments"
+  ]
+}

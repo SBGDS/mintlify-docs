@@ -1,0 +1,217 @@
+---
+title: "Configure Your SBGDS Site Navigation with docs.json"
+sidebarTitle: "Navigation"
+description: "Learn how to set up tabs, groups, anchors, and page order for your SBGDS documentation site using the navigation object in docs.json."
+---
+
+Your site's navigation is defined entirely in `docs.json`, a configuration file at the root of your repository. Every link in your sidebar, every top-level tab, and every page group is declared here — which means your nav is version-controlled, reviewable in pull requests, and always in sync with your content. This guide walks you through structuring that file to build exactly the navigation your readers need.
+
+## The Navigation Object
+
+The `navigation` key in `docs.json` is an array of top-level entries. Each entry is either a **tab** (for multi-section sites) or a **group** (for simpler single-section sites). Groups contain an ordered list of pages.
+
+```json docs.json
+{
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "guides/writing-content"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/navigation",
+        "guides/customization",
+        "guides/publishing"
+      ]
+    }
+  ]
+}
+```
+
+Each string in the `pages` array is the **file path** of an MDX file relative to your repo root, without the `.mdx` extension. SBGDS reads the `title` and `sidebarTitle` frontmatter from each file to build the sidebar label.
+
+<Note>
+  The order of pages in the `pages` array is exactly the order they appear in the sidebar. Rearranging them in `docs.json` is all you need to reorder your navigation.
+</Note>
+
+## Adding a New Page to the Sidebar
+
+When you create a new MDX file, it won't appear in the sidebar automatically — you need to register it in `docs.json`. Add the file path (without `.mdx`) to the appropriate group's `pages` array.
+
+<Steps>
+  <Step title="Create your MDX file">
+    Add a new file to your repository, for example `guides/webhooks.mdx`, with valid frontmatter.
+
+    ```mdx guides/webhooks.mdx
+    ---
+    title: "Receiving Webhooks in Your Application"
+    sidebarTitle: "Webhooks"
+    description: "Learn how to configure webhook endpoints and verify incoming events from SBGDS."
+    ---
+    ```
+  </Step>
+  <Step title="Register the page in docs.json">
+    Open `docs.json` and add the file path to the relevant group:
+
+    ```json docs.json
+    {
+      "navigation": [
+        {
+          "group": "Guides",
+          "pages": [
+            "guides/navigation",
+            "guides/customization",
+            "guides/publishing",
+            "guides/webhooks"
+          ]
+        }
+      ]
+    }
+    ```
+  </Step>
+  <Step title="Verify locally">
+    Run `mint dev` and confirm the new page appears in the sidebar at the expected position.
+  </Step>
+</Steps>
+
+## Creating Tabs for Multi-Section Sites
+
+For larger documentation sites, tabs let you divide content into distinct top-level sections — for example, **Guides**, **API Reference**, and **Changelog**. Each tab has its own independent sidebar.
+
+```json docs.json
+{
+  "navigation": [
+    {
+      "tab": "Guides",
+      "groups": [
+        {
+          "group": "Getting Started",
+          "pages": [
+            "introduction",
+            "quickstart"
+          ]
+        },
+        {
+          "group": "Guides",
+          "pages": [
+            "guides/writing-content",
+            "guides/navigation",
+            "guides/customization",
+            "guides/publishing"
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "API Reference",
+      "groups": [
+        {
+          "group": "Endpoints",
+          "pages": [
+            "api-reference/users",
+            "api-reference/projects",
+            "api-reference/deployments"
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+<Tip>
+  Use tabs to separate fundamentally different audiences or workflows — for example, a "Guides" tab for end users and an "API Reference" tab for developers. Avoid creating tabs just to reduce sidebar length.
+</Tip>
+
+## Using Anchors for External Links
+
+Anchors let you add external links directly into your sidebar navigation. Use them to point readers to related resources like your changelog, status page, or community forum without leaving the nav.
+
+```json docs.json
+{
+  "anchors": [
+    {
+      "name": "API Reference",
+      "icon": "code",
+      "url": "https://api.sbgds.io/docs"
+    },
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://discord.gg/sbgds"
+    },
+    {
+      "name": "Status",
+      "icon": "signal",
+      "url": "https://status.sbgds.io"
+    }
+  ]
+}
+```
+
+Anchors appear as icon-linked items, typically above or below the main navigation groups, depending on your theme.
+
+## Nested Groups
+
+You can nest groups to create a two-level sidebar hierarchy. Nested groups are useful when a top-level section has enough pages to benefit from further categorization.
+
+```json docs.json
+{
+  "navigation": [
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/overview",
+        {
+          "group": "Users",
+          "pages": [
+            "api-reference/users/list",
+            "api-reference/users/get",
+            "api-reference/users/create",
+            "api-reference/users/delete"
+          ]
+        },
+        {
+          "group": "Projects",
+          "pages": [
+            "api-reference/projects/list",
+            "api-reference/projects/create"
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+<Warning>
+  SBGDS supports two levels of nesting (a group within a group). Adding a third level of nesting is not supported and may cause rendering issues.
+</Warning>
+
+## Controlling Sidebar Labels with `sidebarTitle`
+
+By default, SBGDS uses the `title` field from a page's frontmatter as its sidebar label. If your `title` is long — which is often appropriate for SEO and browser tabs — set a shorter `sidebarTitle` to keep the sidebar scannable.
+
+```mdx guides/publishing.mdx
+---
+title: "Publish and Deploy Your SBGDS Docs Site"
+sidebarTitle: "Publishing"
+description: "Learn how to publish your SBGDS documentation site — from local preview to live production deploys via GitHub."
+---
+```
+
+The `sidebarTitle` overrides the title in the sidebar only — the full `title` still appears at the top of the page and in the browser tab.
+
+<CardGroup cols={2}>
+  <Card title="Writing Content" icon="pencil" href="/guides/writing-content">
+    Learn how to use frontmatter, Markdown, and MDX components to author pages.
+  </Card>
+  <Card title="Customization" icon="palette" href="/guides/customization">
+    Set themes, colors, logos, and fonts to match your brand.
+  </Card>
+</CardGroup>

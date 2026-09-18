@@ -1,0 +1,112 @@
+---
+title: "SBGDS REST API: Rate Limits, Pagination, and Errors"
+sidebarTitle: "Overview"
+description: "Use the SBGDS REST API to manage documentation projects, pages, and deployments over HTTPS. Covers base URL, rate limits, pagination, and error codes."
+---
+
+The SBGDS REST API gives you full programmatic control over your documentation projects — create and update pages, trigger deployments, and integrate SBGDS into your existing workflows. Every operation uses standard HTTP methods with JSON request and response bodies, making it straightforward to use from any language or tool.
+
+## Base URL
+
+All API requests are made to the following base URL:
+
+```text
+https://api.sbgds.com/v1
+```
+
+Append the resource path to this base URL for every request. For example, to list your projects, send a `GET` request to `https://api.sbgds.com/v1/projects`.
+
+## Request and Response Format
+
+The API accepts and returns JSON. Set the `Content-Type` header to `application/json` on all requests that include a body. Responses always include a `Content-Type: application/json` header.
+
+```bash
+curl https://api.sbgds.com/v1/projects \
+  -H "Authorization: Bearer sk_live_..." \
+  -H "Content-Type: application/json"
+```
+
+## Rate Limits
+
+The API allows up to **1,000 requests per minute** per API key. If you exceed this limit, the API returns a `429 Too Many Requests` response. The response includes the following headers to help you manage your request rate:
+
+| Header | Description |
+|---|---|
+| `X-RateLimit-Limit` | The maximum number of requests allowed per minute. |
+| `X-RateLimit-Remaining` | The number of requests remaining in the current window. |
+| `X-RateLimit-Reset` | The UTC timestamp (Unix epoch) when the window resets. |
+
+<Tip>
+  If you receive a `429` response, wait until the `X-RateLimit-Reset` time before retrying. Use exponential backoff for automated retry logic.
+</Tip>
+
+## Pagination
+
+List endpoints return paginated results using **cursor-based pagination**. Each response includes a `meta` object with the cursor values you need to fetch the next or previous page.
+
+### Pagination parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `limit` | integer | Number of results to return. Defaults to `20`, maximum `100`. |
+| `after` | string | Return results after this cursor (for next-page navigation). |
+| `before` | string | Return results before this cursor (for previous-page navigation). |
+
+### Paginated response envelope
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "hasNextPage": true,
+    "hasPreviousPage": false,
+    "startCursor": "cursor_abc123",
+    "endCursor": "cursor_xyz789"
+  }
+}
+```
+
+Pass the `endCursor` value as the `after` parameter in your next request to retrieve the following page of results.
+
+## Error Responses
+
+When a request fails, the API returns a standard error envelope with an `error` object containing a machine-readable `code` and a human-readable `message`.
+
+```json
+{
+  "error": {
+    "code": "not_found",
+    "message": "The requested resource was not found."
+  }
+}
+```
+
+<Note>
+  Always check the `error.code` field in your error-handling logic rather than parsing `error.message`. Message text may change without notice; codes are stable.
+</Note>
+
+### Common error codes
+
+| Code | Description |
+|---|---|
+| `invalid_request` | The request body or parameters are malformed or missing required fields. |
+| `unauthorized` | No valid API key was provided. |
+| `forbidden` | The API key does not have permission to perform this action. |
+| `not_found` | The requested resource does not exist or is not accessible. |
+| `rate_limited` | You have exceeded the rate limit for this API key. |
+| `internal_error` | An unexpected error occurred on the SBGDS servers. |
+
+## HTTP Status Codes
+
+The API uses standard HTTP status codes to indicate the outcome of every request.
+
+| Status | Meaning |
+|---|---|
+| `200 OK` | The request succeeded. The response body contains the requested data. |
+| `201 Created` | A new resource was successfully created. The response body contains the new resource. |
+| `400 Bad Request` | The request was malformed or contained invalid parameters. |
+| `401 Unauthorized` | Authentication failed. The API key is missing or invalid. |
+| `403 Forbidden` | The API key is valid but does not have permission to access this resource. |
+| `404 Not Found` | The requested resource does not exist. |
+| `429 Too Many Requests` | You have exceeded the rate limit. Slow down your request rate. |
+| `500 Internal Server Error` | Something went wrong on SBGDS servers. If this persists, contact support. |

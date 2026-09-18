@@ -1,0 +1,298 @@
+---
+title: "SBGDS docs.json Settings: Complete Field Reference"
+sidebarTitle: "Settings"
+description: "Full reference for every configuration option in your SBGDS docs.json file — themes, colors, logos, navbar, footer, contextual toolbar, and more."
+---
+
+Every SBGDS project is controlled by a single `docs.json` file at the root of your repository. This file defines your site's identity, appearance, navigation, and integrations — all in one place. The sections below document every top-level field, what it does, and the values it accepts.
+
+## Complete Example
+
+Before diving into individual fields, here is a fully populated `docs.json` you can use as a starting point and trim to your needs.
+
+```json docs.json
+{
+  "$schema": "https://schema.sbgds.com/docs.json",
+  "name": "Acme Developer Docs",
+  "theme": "willow",
+  "colors": {
+    "primary": "#6366F1",
+    "light": "#A5B4FC",
+    "dark": "#3730A3"
+  },
+  "favicon": "/images/favicon.png",
+  "logo": {
+    "light": "/images/logo-light.svg",
+    "dark": "/images/logo-dark.svg"
+  },
+  "navbar": {
+    "links": [
+      { "label": "Blog", "href": "https://acme.com/blog" },
+      { "label": "Status", "href": "https://status.acme.com" }
+    ],
+    "primary": {
+      "label": "Get Started",
+      "href": "https://acme.com/signup"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/acme",
+      "twitter": "https://twitter.com/acme",
+      "linkedin": "https://linkedin.com/company/acme",
+      "discord": "https://discord.gg/acme"
+    }
+  },
+  "contextual": {
+    "options": ["chatgpt", "claude", "perplexity", "copy", "view"]
+  }
+}
+```
+
+---
+
+## Field Reference
+
+### `$schema`
+
+Pointing to the SBGDS JSON Schema URL enables real-time validation and autocomplete in editors such as VS Code and Cursor.
+
+| Property | Value |
+|---|---|
+| Type | `string` (URL) |
+| Required | No, but strongly recommended |
+
+```json docs.json
+{
+  "$schema": "https://schema.sbgds.com/docs.json"
+}
+```
+
+<Tip>
+  Add `"$schema"` as the very first key in your file so your editor validates all other fields as you type.
+</Tip>
+
+---
+
+### `name`
+
+The human-readable name of your documentation site. SBGDS displays this in the browser tab, in social share previews, and in the top-left of the navbar when no logo is configured.
+
+| Property | Value |
+|---|---|
+| Type | `string` |
+| Required | Yes |
+| Max length | 60 characters |
+
+```json docs.json
+{
+  "name": "Acme Developer Docs"
+}
+```
+
+---
+
+### `theme`
+
+Selects the overall visual theme for your site. Each theme ships with its own typography scale, spacing rhythm, and component style. You can further override individual colors with the `colors` field.
+
+| Property | Value |
+|---|---|
+| Type | `string` (enum) |
+| Required | No |
+| Default | `"willow"` |
+
+**Available themes:**
+
+| Theme name | Character |
+|---|---|
+| `"willow"` | Clean, neutral, and content-first — the best starting point for most teams |
+| `"luma"` | Soft gradients and modern typography for a polished SaaS feel |
+| `"palm"` | Bold and vibrant, with colorful code highlights for developer-heavy docs |
+| `"almond"` | Editorial layout with generous typography, ideal for guides and tutorials |
+| `"aspen"` | Minimal with generous white space — nothing competes with your content |
+| `"maple"` | Warm earth tones and elevated spacing for an approachable, friendly tone |
+| `"sequoia"` | Rich, high-contrast palette with strong visual hierarchy |
+
+```json docs.json
+{
+  "theme": "willow"
+}
+```
+
+---
+
+### `colors`
+
+Defines the three brand color slots that SBGDS uses throughout your site — buttons, links, hover states, and active sidebar items.
+
+| Property | Value |
+|---|---|
+| Type | `object` |
+| Required | No |
+
+| Sub-field | Type | Purpose |
+|---|---|---|
+| `primary` | hex string | Default interactive and accent color |
+| `light` | hex string | Variant used on dark backgrounds |
+| `dark` | hex string | Variant used on light backgrounds |
+
+```json docs.json
+{
+  "colors": {
+    "primary": "#6366F1",
+    "light": "#A5B4FC",
+    "dark": "#3730A3"
+  }
+}
+```
+
+<Note>
+  All three values must be valid six-digit hex codes. Three-digit shorthand (e.g. `#F00`) is not supported.
+</Note>
+
+---
+
+### `favicon`
+
+Path or URL to the favicon image shown in browser tabs and bookmarks. SBGDS supports `.png`, `.ico`, and `.svg` favicons. Store the file inside your `/public` or `/images` directory and reference it with a root-relative path.
+
+| Property | Value |
+|---|---|
+| Type | `string` |
+| Required | No |
+| Recommended size | 32×32 px (`.png`) or 16×16 px (`.ico`) |
+
+```json docs.json
+{
+  "favicon": "/images/favicon.png"
+}
+```
+
+---
+
+### `logo`
+
+Provides separate logo assets for light and dark mode. When both variants are supplied, SBGDS automatically swaps them as the user switches themes.
+
+| Property | Value |
+|---|---|
+| Type | `object` |
+| Required | No |
+
+| Sub-field | Type | Purpose |
+|---|---|---|
+| `light` | string | Logo shown on light-mode backgrounds |
+| `dark` | string | Logo shown on dark-mode backgrounds |
+
+```json docs.json
+{
+  "logo": {
+    "light": "/images/logo-light.svg",
+    "dark": "/images/logo-dark.svg"
+  }
+}
+```
+
+<Tip>
+  SVG is the preferred format for logos — it renders crisply at every screen density without a file size penalty.
+</Tip>
+
+---
+
+### `navbar`
+
+Controls the top navigation bar: the text links rendered on the right side and an optional primary call-to-action button.
+
+| Property | Value |
+|---|---|
+| Type | `object` |
+| Required | No |
+
+**`navbar.links`** — an array of link objects:
+
+| Sub-field | Type | Purpose |
+|---|---|---|
+| `label` | string | Visible link text |
+| `href` | string | Destination URL (absolute or root-relative) |
+
+**`navbar.primary`** — a single button object rendered as a filled button:
+
+| Sub-field | Type | Purpose |
+|---|---|---|
+| `label` | string | Button text |
+| `href` | string | Destination URL |
+
+```json docs.json
+{
+  "navbar": {
+    "links": [
+      { "label": "Blog", "href": "https://acme.com/blog" },
+      { "label": "Status", "href": "https://status.acme.com" }
+    ],
+    "primary": {
+      "label": "Get Started",
+      "href": "https://acme.com/signup"
+    }
+  }
+}
+```
+
+---
+
+### `footer`
+
+Populates the site footer with social media icon links. Provide only the platforms you want to show — unrecognized keys are ignored.
+
+| Property | Value |
+|---|---|
+| Type | `object` |
+| Required | No |
+
+**Supported `socials` keys:** `github`, `twitter`, `linkedin`, `discord`, `youtube`, `slack`, `instagram`, `facebook`
+
+```json docs.json
+{
+  "footer": {
+    "socials": {
+      "github": "https://github.com/acme",
+      "twitter": "https://twitter.com/acme",
+      "linkedin": "https://linkedin.com/company/acme",
+      "discord": "https://discord.gg/acme"
+    }
+  }
+}
+```
+
+---
+
+### `contextual`
+
+Configures the contextual toolbar that appears when a reader selects text on any page. You can surface quick-action buttons for copying text, viewing the source file, or opening the selected content in AI assistants.
+
+| Property | Value |
+|---|---|
+| Type | `object` |
+| Required | No |
+
+**`contextual.options`** — array of strings enabling each button:
+
+| Option value | What it does |
+|---|---|
+| `"copy"` | Copies the selected text to clipboard |
+| `"view"` | Opens the raw MDX source on GitHub |
+| `"chatgpt"` | Sends selection to ChatGPT as context |
+| `"claude"` | Sends selection to Claude as context |
+| `"perplexity"` | Searches Perplexity with the selection |
+
+```json docs.json
+{
+  "contextual": {
+    "options": ["chatgpt", "claude", "perplexity", "copy", "view"]
+  }
+}
+```
+
+<Note>
+  AI contextual options require the respective integration to be enabled in your project settings. See the [Integrations](/configuration/integrations) guide for setup steps.
+</Note>

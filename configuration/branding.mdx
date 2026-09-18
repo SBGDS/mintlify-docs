@@ -1,0 +1,212 @@
+---
+title: "Visual Branding: Themes, Colors, and Logos in SBGDS"
+sidebarTitle: "Branding"
+description: "Customize your SBGDS site with themes, brand colors, logos, and favicons to create a documentation experience that reflects your product identity."
+---
+
+Your documentation is an extension of your product — it should look and feel like it belongs to your brand, not a generic template. SBGDS gives you fine-grained control over visual identity through a handful of fields in `docs.json`. This guide walks you through each branding lever, from picking a theme to uploading logos optimized for both color modes.
+
+## Choosing a Theme
+
+A theme determines the baseline visual language of your site: the font stack, spacing scale, component shapes, and decorative details. Your `colors` settings are applied on top of whichever theme you select, so you can combine any theme with your own brand palette.
+
+Set your theme with the `theme` field in `docs.json`:
+
+```json docs.json
+{
+  "theme": "willow"
+}
+```
+
+SBGDS ships with seven built-in themes:
+
+| Theme | Character |
+|---|---|
+| `willow` | Clean, neutral, and content-first — the best starting point for most teams |
+| `luma` | Soft gradients and modern typography for a polished SaaS feel |
+| `palm` | Bold and vibrant with colorful code highlights for developer-heavy docs |
+| `almond` | Editorial layout with generous typography, ideal for guides and tutorials |
+| `aspen` | Radical minimalism with maximum white space — nothing competes with your content |
+| `maple` | Warm earth tones and elevated spacing create an approachable, friendly tone |
+| `sequoia` | Rich, high-contrast palette with strong visual hierarchy, great for infrastructure tooling |
+
+<Tip>
+  Not sure which theme fits? Run `mint dev` locally and toggle the `theme` value — changes hot-reload instantly so you can compare in seconds.
+</Tip>
+
+---
+
+## Setting Brand Colors
+
+The `colors` object in `docs.json` lets you override the theme's default accent with your own brand palette. SBGDS uses these three slots across interactive elements — links, buttons, active sidebar items, and focus rings.
+
+```json docs.json
+{
+  "colors": {
+    "primary": "#6366F1",
+    "light": "#A5B4FC",
+    "dark": "#3730A3"
+  }
+}
+```
+
+| Field | When it's used |
+|---|---|
+| `primary` | The default accent rendered at 100% opacity on neutral backgrounds |
+| `light` | A lighter variant used for accents on dark-mode surfaces |
+| `dark` | A deeper variant used for accents on light-mode surfaces |
+
+<Note>
+  All three values must be six-digit hex strings (e.g. `#6366F1`). Shorthand hex, RGB, HSL, and named colors are not supported.
+</Note>
+
+### Choosing Accessible Colors
+
+SBGDS automatically calculates contrast ratios before rendering text on your brand color. If your `primary` color produces insufficient contrast against white or black body text, a warning appears in the CLI and the dashboard.
+
+<Warning>
+  Ensure your `primary` color meets at least a **4.5:1 contrast ratio** against white (`#FFFFFF`) for WCAG AA compliance. Tools like [Accessible Colors](https://accessible-colors.com) can verify this before you commit.
+</Warning>
+
+---
+
+## Adding Your Logo
+
+Supplying a logo replaces the plain `name` text in the top-left corner of the navbar. SBGDS accepts separate assets for light and dark mode so your logo always reads clearly regardless of the user's color scheme preference.
+
+```json docs.json
+{
+  "logo": {
+    "light": "/images/logo-light.svg",
+    "dark": "/images/logo-dark.svg"
+  }
+}
+```
+
+Place your logo files anywhere inside your repository and reference them with root-relative paths. Common conventions are `/images/`, `/public/`, or `/assets/`.
+
+### Logo Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use SVG whenever possible" icon="vector-square">
+    SVG logos render crisply on all screen densities (including Retina displays) and remain small in file size.
+  </Card>
+  <Card title="Provide both color-mode variants" icon="circle-half-stroke">
+    A dark logo on a dark background is invisible. Always supply a light variant (for dark mode) and a dark variant (for light mode).
+  </Card>
+  <Card title="Keep height between 24–40 px" icon="ruler-vertical">
+    SBGDS constrains logo height in the navbar. Design or export your logo at a height in this range to avoid unexpected clipping.
+  </Card>
+  <Card title="Use a transparent background" icon="image">
+    Export logos with a transparent background so they integrate cleanly with any theme color.
+  </Card>
+</CardGroup>
+
+---
+
+## Setting Your Favicon
+
+The favicon appears in browser tabs, bookmarks, and search results. Reference it with a root-relative path in the `favicon` field:
+
+```json docs.json
+{
+  "favicon": "/images/favicon.png"
+}
+```
+
+| Format | Recommended use |
+|---|---|
+| `.png` | 32×32 px, 1-bit transparency — best default choice |
+| `.ico` | Multi-resolution bundle (16×16, 32×32) — maximum browser compatibility |
+| `.svg` | Modern browsers only; scales to any size without pixelation |
+
+<Tip>
+  Generate a full favicon bundle (`.ico`, various PNG sizes, and Apple Touch icons) from your logo SVG using a tool like [RealFaviconGenerator](https://realfavicongenerator.net), then place all outputs in `/images/favicons/`.
+</Tip>
+
+---
+
+## Custom Fonts
+
+SBGDS allows you to swap the default system font stack for a Google Fonts typeface using the `font` field. Specify the family name exactly as it appears on Google Fonts:
+
+```json docs.json
+{
+  "font": {
+    "headings": "Inter",
+    "body": "Inter"
+  }
+}
+```
+
+You can use different typefaces for headings and body copy, or set both to the same family for a unified look. SBGDS loads the font asynchronously so it never blocks page rendering.
+
+<Note>
+  Only Google Fonts are supported via the `font` field. For self-hosted or licensed fonts, use a custom CSS file referenced through the `customCss` field and declare your `@font-face` rules there.
+</Note>
+
+---
+
+## Dark and Light Mode Behavior
+
+SBGDS ships with both light and dark modes enabled by default. Visitors see the mode that matches their operating system preference, and a toggle in the navbar lets them switch manually.
+
+### How SBGDS applies your colors in each mode
+
+| Element | Light mode | Dark mode |
+|---|---|---|
+| Logo | `logo.dark` | `logo.light` |
+| Accent color | `colors.dark` | `colors.light` |
+| Background | Theme-defined light surface | Theme-defined dark surface |
+| Code blocks | Light syntax theme | Dark syntax theme |
+
+### Forcing a single mode
+
+If your brand only works in one color mode, you can disable the toggle and lock the site:
+
+```json docs.json
+{
+  "modeToggle": {
+    "default": "dark",
+    "isHidden": true
+  }
+}
+```
+
+Set `default` to `"light"` or `"dark"`, and `isHidden` to `true` to remove the toggle from the navbar entirely.
+
+<Warning>
+  Locking to a single mode means some users will see your site in conditions they didn't choose. Test carefully for readability and contrast before disabling the toggle.
+</Warning>
+
+---
+
+## Putting It All Together
+
+Here is a complete branding block combining every field covered in this guide:
+
+```json docs.json
+{
+  "$schema": "https://schema.sbgds.com/docs.json",
+  "name": "Acme Developer Docs",
+  "theme": "willow",
+  "colors": {
+    "primary": "#6366F1",
+    "light": "#A5B4FC",
+    "dark": "#3730A3"
+  },
+  "favicon": "/images/favicon.png",
+  "logo": {
+    "light": "/images/logo-light.svg",
+    "dark": "/images/logo-dark.svg"
+  },
+  "font": {
+    "headings": "Inter",
+    "body": "Inter"
+  },
+  "modeToggle": {
+    "default": "light",
+    "isHidden": false
+  }
+}
+```

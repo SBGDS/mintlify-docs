@@ -1,0 +1,103 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "luma",
+  "name": "SBGDS",
+  "colors": {
+    "primary": "#1be49c",
+    "light": "#0c8c5c",
+    "dark": "#0c0c0c"
+  },
+  "favicon": "https://media.brand.dev/483ee27f-08fb-4d32-842d-86b4c40f9fb4.png",
+  "logo": {
+    "light": "https://media.brand.dev/07fcb57b-76a5-49f6-abdb-740da69c791f.svg",
+    "dark": "https://media.brand.dev/07fcb57b-76a5-49f6-abdb-740da69c791f.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:support@sbgds.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get Started",
+      "href": "/quickstart"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "core-concepts"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/writing-content",
+              "guides/navigation",
+              "guides/customization",
+              "guides/publishing"
+            ]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "components/overview",
+              "components/callouts",
+              "components/code-blocks",
+              "components/cards"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/settings",
+              "configuration/branding",
+              "configuration/integrations"
+            ]
+          },
+          {
+            "group": "Help",
+            "pages": [
+              "help/faq",
+              "help/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/authentication"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api-reference/pages",
+              "api-reference/deployments"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/sbgds",
+      "github": "https://github.com/SBGDS"
+    }
+  }
+}

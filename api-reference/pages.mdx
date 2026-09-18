@@ -1,0 +1,365 @@
+---
+title: "SBGDS Pages API — Full CRUD for Documentation Pages"
+sidebarTitle: "Pages"
+description: "Create, read, update, and delete documentation pages with the SBGDS REST API. Full parameter reference, response schemas, and copy-paste curl examples."
+---
+
+The Pages API lets you manage every documentation page within a project — from drafting new content to updating slugs and removing outdated articles. Each page stores its content as an MDX string, giving you full control over headings, components, and code blocks through the API.
+
+## The Page Object
+
+All Pages endpoints return page objects with the following fields.
+
+<ResponseField name="id" type="string">
+  The unique identifier for the page.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  The display title of the page, shown in the sidebar and browser tab.
+</ResponseField>
+
+<ResponseField name="slug" type="string">
+  The URL-safe path segment for the page (for example, `getting-started`). Must be unique within the project.
+</ResponseField>
+
+<ResponseField name="content" type="string">
+  The full MDX source content of the page.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  ISO 8601 timestamp indicating when the page was created.
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  ISO 8601 timestamp indicating when the page was last modified.
+</ResponseField>
+
+---
+
+## List Pages
+
+Retrieve all pages belonging to a project, returned in the order they appear in the sidebar.
+
+```text
+GET /v1/projects/{projectId}/pages
+```
+
+### Path parameters
+
+<ParamField path="projectId" type="string" required>
+  The unique identifier of the project whose pages you want to list.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="limit" type="integer">
+  Number of pages to return per page of results. Defaults to `20`, maximum `100`.
+</ParamField>
+
+<ParamField query="after" type="string">
+  Cursor for next-page navigation. Pass the `endCursor` value from a previous response.
+</ParamField>
+
+### Example request
+
+```bash
+curl https://api.sbgds.com/v1/projects/proj_abc123/pages \
+  -H "Authorization: Bearer sk_live_..."
+```
+
+```javascript
+const response = await fetch(
+  "https://api.sbgds.com/v1/projects/proj_abc123/pages",
+  { headers: { Authorization: "Bearer sk_live_..." } }
+);
+const { data, meta } = await response.json();
+```
+
+### Example response
+
+```json
+{
+  "data": [
+    {
+      "id": "page_1a2b3c",
+      "title": "Getting Started",
+      "slug": "getting-started",
+      "content": "# Getting Started\n\nWelcome to the docs...",
+      "createdAt": "2024-03-01T10:00:00Z",
+      "updatedAt": "2024-03-15T14:22:00Z"
+    }
+  ],
+  "meta": {
+    "hasNextPage": false,
+    "hasPreviousPage": false,
+    "startCursor": "cursor_1a2b3c",
+    "endCursor": "cursor_1a2b3c"
+  }
+}
+```
+
+---
+
+## Get a Page
+
+Retrieve a single page by its ID.
+
+```text
+GET /v1/projects/{projectId}/pages/{pageId}
+```
+
+### Path parameters
+
+<ParamField path="projectId" type="string" required>
+  The unique identifier of the project that contains the page.
+</ParamField>
+
+<ParamField path="pageId" type="string" required>
+  The unique identifier of the page to retrieve.
+</ParamField>
+
+### Example request
+
+```bash
+curl https://api.sbgds.com/v1/projects/proj_abc123/pages/page_1a2b3c \
+  -H "Authorization: Bearer sk_live_..."
+```
+
+```python
+import httpx
+
+headers = {"Authorization": "Bearer sk_live_..."}
+r = httpx.get(
+    "https://api.sbgds.com/v1/projects/proj_abc123/pages/page_1a2b3c",
+    headers=headers,
+)
+page = r.json()
+```
+
+### Example response
+
+```json
+{
+  "id": "page_1a2b3c",
+  "title": "Getting Started",
+  "slug": "getting-started",
+  "content": "# Getting Started\n\nWelcome to the docs...",
+  "createdAt": "2024-03-01T10:00:00Z",
+  "updatedAt": "2024-03-15T14:22:00Z"
+}
+```
+
+---
+
+## Create a Page
+
+Create a new documentation page within a project. The page is created as a draft and does not appear publicly until you trigger a deployment.
+
+```text
+POST /v1/projects/{projectId}/pages
+```
+
+### Path parameters
+
+<ParamField path="projectId" type="string" required>
+  The unique identifier of the project in which to create the page.
+</ParamField>
+
+### Body parameters
+
+<ParamField body="title" type="string" required>
+  The display title of the new page.
+</ParamField>
+
+<ParamField body="slug" type="string" required>
+  The URL path segment for the page (for example, `quick-start`). Must be unique within the project. Use lowercase letters, numbers, and hyphens only.
+</ParamField>
+
+<ParamField body="content" type="string">
+  The MDX source content of the page. Defaults to an empty string if omitted.
+</ParamField>
+
+<Note>
+  Slugs must be unique within a project. If you submit a slug that is already in use, the API returns a `400 Bad Request` error with the code `slug_conflict`.
+</Note>
+
+### Example request
+
+```bash
+curl -X POST https://api.sbgds.com/v1/projects/proj_abc123/pages \
+  -H "Authorization: Bearer sk_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Quick Start Guide",
+    "slug": "quick-start",
+    "content": "# Quick Start\n\nGet up and running in minutes."
+  }'
+```
+
+```javascript
+const response = await fetch(
+  "https://api.sbgds.com/v1/projects/proj_abc123/pages",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer sk_live_...",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      title: "Quick Start Guide",
+      slug: "quick-start",
+      content: "# Quick Start\n\nGet up and running in minutes.",
+    }),
+  }
+);
+const page = await response.json();
+```
+
+### Example response
+
+```json
+{
+  "id": "page_9z8y7x",
+  "title": "Quick Start Guide",
+  "slug": "quick-start",
+  "content": "# Quick Start\n\nGet up and running in minutes.",
+  "createdAt": "2024-04-10T09:15:00Z",
+  "updatedAt": "2024-04-10T09:15:00Z"
+}
+```
+
+A successful creation returns `201 Created`.
+
+---
+
+## Update a Page
+
+Update the title, slug, or content of an existing page. Send only the fields you want to change — omitted fields retain their current values.
+
+```text
+PUT /v1/projects/{projectId}/pages/{pageId}
+```
+
+### Path parameters
+
+<ParamField path="projectId" type="string" required>
+  The unique identifier of the project that contains the page.
+</ParamField>
+
+<ParamField path="pageId" type="string" required>
+  The unique identifier of the page to update.
+</ParamField>
+
+### Body parameters
+
+<ParamField body="title" type="string">
+  A new display title for the page.
+</ParamField>
+
+<ParamField body="slug" type="string">
+  A new URL slug for the page. Must be unique within the project.
+</ParamField>
+
+<ParamField body="content" type="string">
+  The replacement MDX content for the page. This overwrites the existing content entirely.
+</ParamField>
+
+<Warning>
+  Changing a page's `slug` updates its URL. Existing links pointing to the old slug will break unless you set up redirects in your project configuration.
+</Warning>
+
+### Example request
+
+```bash
+curl -X PUT https://api.sbgds.com/v1/projects/proj_abc123/pages/page_9z8y7x \
+  -H "Authorization: Bearer sk_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Quick Start Guide (Updated)",
+    "content": "# Quick Start\n\nGet up and running in under five minutes."
+  }'
+```
+
+```python
+import httpx
+
+headers = {
+    "Authorization": "Bearer sk_live_...",
+    "Content-Type": "application/json",
+}
+payload = {
+    "title": "Quick Start Guide (Updated)",
+    "content": "# Quick Start\n\nGet up and running in under five minutes.",
+}
+r = httpx.put(
+    "https://api.sbgds.com/v1/projects/proj_abc123/pages/page_9z8y7x",
+    headers=headers,
+    json=payload,
+)
+updated_page = r.json()
+```
+
+### Example response
+
+```json
+{
+  "id": "page_9z8y7x",
+  "title": "Quick Start Guide (Updated)",
+  "slug": "quick-start",
+  "content": "# Quick Start\n\nGet up and running in under five minutes.",
+  "createdAt": "2024-04-10T09:15:00Z",
+  "updatedAt": "2024-04-11T16:45:00Z"
+}
+```
+
+---
+
+## Delete a Page
+
+Permanently delete a page from a project. This action cannot be undone.
+
+```text
+DELETE /v1/projects/{projectId}/pages/{pageId}
+```
+
+### Path parameters
+
+<ParamField path="projectId" type="string" required>
+  The unique identifier of the project that contains the page.
+</ParamField>
+
+<ParamField path="pageId" type="string" required>
+  The unique identifier of the page to delete.
+</ParamField>
+
+<Warning>
+  Deleting a page is permanent and cannot be reversed through the API. Before deleting, consider updating the page content to an archived state instead.
+</Warning>
+
+### Example request
+
+```bash
+curl -X DELETE https://api.sbgds.com/v1/projects/proj_abc123/pages/page_9z8y7x \
+  -H "Authorization: Bearer sk_live_..."
+```
+
+```javascript
+await fetch(
+  "https://api.sbgds.com/v1/projects/proj_abc123/pages/page_9z8y7x",
+  {
+    method: "DELETE",
+    headers: { Authorization: "Bearer sk_live_..." },
+  }
+);
+```
+
+### Example response
+
+A successful deletion returns `200 OK` with a confirmation body:
+
+```json
+{
+  "deleted": true,
+  "id": "page_9z8y7x"
+}
+```

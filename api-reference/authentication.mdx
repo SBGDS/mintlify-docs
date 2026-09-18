@@ -1,0 +1,134 @@
+---
+title: "SBGDS API Authentication — API Keys and Bearer Tokens"
+sidebarTitle: "Authentication"
+description: "Learn how to authenticate SBGDS API requests using API keys passed as Bearer tokens. Covers key generation, scopes, rotation, and revocation."
+---
+
+Every request to the SBGDS API must be authenticated with an API key. API keys identify your account and enforce the permissions granted to each key, so treat them like passwords — never expose them in client-side code, public repositories, or logs.
+
+## Generating an API Key
+
+Generate API keys from the SBGDS dashboard:
+
+1. Open **Settings** in the left sidebar.
+2. Navigate to **API Keys**.
+3. Click **New API Key**.
+4. Give the key a descriptive name (for example, `ci-deploy-prod` or `docs-preview`).
+5. Select the [scopes](#api-key-scopes) the key requires.
+6. Click **Create Key** and copy the key immediately.
+
+<Warning>
+  SBGDS displays your API key **only once** at creation time. Store it securely in a secrets manager or environment variable. If you lose the key, you must rotate it.
+</Warning>
+
+## Passing Your API Key
+
+Include your API key in the `Authorization` header of every request as a Bearer token:
+
+```text
+Authorization: Bearer <your-api-key>
+```
+
+### curl example
+
+```bash
+curl https://api.sbgds.com/v1/projects \
+  -H "Authorization: Bearer sk_live_..."
+```
+
+### JavaScript (Node.js) example
+
+```javascript
+const response = await fetch("https://api.sbgds.com/v1/projects", {
+  headers: {
+    Authorization: "Bearer sk_live_...",
+    "Content-Type": "application/json",
+  },
+});
+
+const { data } = await response.json();
+console.log(data);
+```
+
+### Python example
+
+```python
+import httpx
+
+headers = {"Authorization": "Bearer sk_live_..."}
+response = httpx.get("https://api.sbgds.com/v1/projects", headers=headers)
+projects = response.json()
+```
+
+<Tip>
+  Store your API key in an environment variable like `SBGDS_API_KEY` rather than hard-coding it. Reference the variable at runtime to keep credentials out of your codebase.
+</Tip>
+
+## API Key Scopes
+
+When you create an API key, you assign it one or more scopes that control what actions the key can perform. Follow the principle of least privilege — grant only the scopes your integration needs.
+
+| Scope | Permissions |
+|---|---|
+| `read` | Read-only access to all resources (projects, pages, deployments). |
+| `write` | Create and update resources. Includes all `read` permissions. |
+| `admin` | Full access including deleting resources, managing members, and rotating keys. Includes all `write` permissions. |
+
+<Note>
+  A key with only the `read` scope cannot trigger deployments or modify pages. If your integration needs to publish changes, assign the `write` scope at minimum.
+</Note>
+
+### Scope reference by endpoint
+
+| Action | Required scope |
+|---|---|
+| List or get any resource | `read` |
+| Create or update pages | `write` |
+| Trigger a deployment | `write` |
+| Delete a page or project | `admin` |
+| Rotate or revoke API keys | `admin` |
+
+## Rotating API Keys
+
+Rotate a key to issue a new credential while immediately invalidating the old one. Rotate keys when a key may have been compromised or as part of a regular security rotation schedule.
+
+1. Open **Settings → API Keys** in the dashboard.
+2. Find the key you want to rotate and click **Rotate**.
+3. Copy the new key value and update every service that uses it.
+4. Click **Confirm Rotation** — the old key stops working immediately.
+
+## Revoking API Keys
+
+Revoke a key to permanently disable it without issuing a replacement. Use this when decommissioning an integration or offboarding a team member.
+
+1. Open **Settings → API Keys** in the dashboard.
+2. Find the key and click **Revoke**.
+3. Confirm the action — revocation is immediate and irreversible.
+
+## Authentication Errors
+
+If your request is missing an API key or the key is invalid, the API returns a `401 Unauthorized` response.
+
+```json
+{
+  "error": {
+    "code": "unauthorized",
+    "message": "No valid API key was provided."
+  }
+}
+```
+
+If your key is valid but lacks the required scope for the requested action, the API returns a `403 Forbidden` response.
+
+```json
+{
+  "error": {
+    "code": "forbidden",
+    "message": "This API key does not have permission to perform this action."
+  }
+}
+```
+
+<Warning>
+  A `403` error does not mean your key is invalid — it means your key's scopes are insufficient. Update the key's scopes in the dashboard or create a new key with the required permissions.
+</Warning>

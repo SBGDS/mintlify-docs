@@ -1,0 +1,174 @@
+---
+title: "Publishing and Deploying Your SBGDS Documentation Site"
+sidebarTitle: "Publishing"
+description: "Learn how to publish your SBGDS documentation site — from local preview with mint dev to live production deploys and custom domains via GitHub."
+---
+
+Publishing your SBGDS documentation site is built around a Git-based workflow: you write and review changes locally, push to GitHub, and SBGDS automatically deploys the latest version of your site. There's no build pipeline to manage, no servers to configure, and no CLI deploy commands to memorize. Every push to your configured branch triggers a fresh deploy within seconds.
+
+## How Publishing Works
+
+When you connect your GitHub repository to SBGDS, a webhook is registered on your repo. Every time you push to the designated deploy branch, SBGDS pulls your latest content, builds the site, and publishes it to your domain. The entire process typically completes in under 30 seconds.
+
+```text
+Write MDX → Push to GitHub → SBGDS builds → Site is live
+```
+
+<Note>
+  Only pushes to your configured deploy branch trigger a production deploy. Pushes to other branches are used for deploy previews (see below).
+</Note>
+
+## Connecting GitHub to SBGDS
+
+Before SBGDS can deploy your site, you need to link your GitHub repository from the SBGDS dashboard.
+
+<Steps>
+  <Step title="Open your project in the SBGDS dashboard">
+    Navigate to [app.sbgds.io](https://app.sbgds.io) and select your project, or create a new one.
+  </Step>
+  <Step title="Connect your GitHub account">
+    Go to **Settings → Integrations → GitHub** and click **Connect GitHub**. Authorize the SBGDS GitHub app when prompted. You only need to do this once per GitHub account.
+  </Step>
+  <Step title="Select your repository">
+    Choose the repository that contains your `docs.json` and MDX files. SBGDS will automatically detect your docs root.
+  </Step>
+  <Step title="Confirm the connection">
+    Once connected, SBGDS displays the repository name and your current deploy branch. Your site will deploy automatically on the next push.
+  </Step>
+</Steps>
+
+## Branch Settings
+
+By default, SBGDS deploys from your repository's default branch (usually `main` or `master`). You can change the deploy branch in **Settings → Deployments → Deploy Branch**.
+
+```text
+Settings → Deployments → Deploy Branch → main
+```
+
+<Tip>
+  Use a `main` / `dev` branching strategy: merge documentation changes into `main` only when they're ready to go live. Keep drafts and work-in-progress on feature branches so they appear only in deploy previews.
+</Tip>
+
+### Deploy Previews
+
+Every pull request against your deploy branch automatically generates a **deploy preview** — a fully rendered, publicly shareable version of your docs at a unique URL. Use previews to review changes before merging.
+
+```text
+https://preview-<branch-name>.sbgds.io
+```
+
+The preview URL is posted as a comment on the pull request by the SBGDS GitHub app.
+
+## Previewing Changes Locally with `mint dev`
+
+Before pushing to GitHub, preview your site locally to catch formatting issues, broken links, and component errors in real time. The SBGDS CLI (`mint`) runs a local development server that hot-reloads as you edit.
+
+### Install the CLI
+
+```bash
+npm install -g mint
+```
+
+### Start the development server
+
+Run this command from the root of your docs repository — the directory that contains `docs.json`:
+
+```bash
+mint dev
+```
+
+Your site is available at `http://localhost:3000` by default. The terminal output shows the local URL:
+
+```bash
+$ mint dev
+
+  ✓  Loaded docs.json
+  ✓  Resolved 42 pages
+  ✓  Starting local server
+
+  Local:   http://localhost:3000
+  Network: http://192.168.1.10:3000
+
+  Ready in 1.2s
+```
+
+### Useful CLI flags
+
+```bash
+# Run on a custom port
+mint dev --port 4000
+
+# Disable automatic browser opening
+mint dev --no-open
+```
+
+<Warning>
+  `mint dev` is for local preview only. It does not deploy your site or interact with your live domain. Always push to GitHub to trigger a production deploy.
+</Warning>
+
+## Custom Domains
+
+Serve your documentation from your own domain (e.g. `docs.yourcompany.com`) instead of the default `your-project.sbgds.io` URL.
+
+<Steps>
+  <Step title="Add your domain in docs.json">
+    Set the `customDomain` field in your `docs.json`:
+
+    ```json docs.json
+    {
+      "customDomain": "docs.yourcompany.com"
+    }
+    ```
+
+    Commit and push this change to trigger a deploy.
+  </Step>
+  <Step title="Add a CNAME record in your DNS provider">
+    Log in to your DNS provider and create a new record:
+
+    | Type | Name | Value | TTL |
+    |---|---|---|---|
+    | CNAME | `docs` | `hosting.sbgds.io` | 300 |
+
+    The **Name** is the subdomain you're using (e.g. `docs`). The **Value** always points to `hosting.sbgds.io`.
+  </Step>
+  <Step title="Verify the domain in SBGDS">
+    Go to **Settings → Domains** in the SBGDS dashboard. Your domain will show a **Pending** status until the CNAME propagates. Click **Verify** to check the status manually. SBGDS provisions an SSL certificate automatically once the domain resolves.
+  </Step>
+</Steps>
+
+<Note>
+  DNS propagation can take anywhere from a few minutes to 48 hours depending on your provider and TTL settings. SSL provisioning happens automatically after successful verification.
+</Note>
+
+## Rollbacks and Version History
+
+Every successful deploy creates a versioned snapshot of your site. If a bad deploy makes it to production, you can roll back to any previous version from the SBGDS dashboard without touching your Git history.
+
+<Steps>
+  <Step title="Open the Deployments panel">
+    In the SBGDS dashboard, navigate to **Deployments**. You'll see a chronological list of all deploys with their commit SHA, timestamp, and status.
+  </Step>
+  <Step title="Select the version to restore">
+    Find the last known-good deploy and click **Rollback to this version**. SBGDS immediately republishes that snapshot to your live domain.
+  </Step>
+  <Step title="Fix the issue in Git">
+    A rollback does not revert your Git history — it only changes what's live on your domain. Fix the underlying issue in your repository and push again to create a new deploy.
+  </Step>
+</Steps>
+
+<Tip>
+  Rollbacks are instant and don't require a new build. They re-serve a cached snapshot, so your site is back online in seconds, not minutes.
+</Tip>
+
+## Deployment Checklist
+
+Before pushing to production, run through this checklist to avoid common issues:
+
+<Accordion title="Pre-deploy checklist">
+  - Run `mint dev` locally and confirm the site renders without errors.
+  - Check the terminal output for broken internal links.
+  - Verify all new MDX files are registered in `docs.json`.
+  - Confirm frontmatter is present and valid on all new pages.
+  - Review any renamed or deleted files to ensure nav references are updated.
+  - Check image paths resolve correctly in the local preview.
+</Accordion>

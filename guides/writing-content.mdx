@@ -1,0 +1,217 @@
+---
+title: "How to Write and Format Documentation Pages in SBGDS"
+sidebarTitle: "Writing Content"
+description: "Learn how to write and format documentation pages in SBGDS using MDX — Markdown enhanced with powerful UI components for rich, interactive docs."
+---
+
+SBGDS pages are written in MDX — a format that combines the simplicity of Markdown with the power of JSX components. Every page you write is a `.mdx` file that lives in your repository, and SBGDS automatically turns it into a beautifully rendered documentation page. Whether you're writing a quickstart guide or a full API reference, MDX gives you the tools to make your content clear, interactive, and easy to navigate.
+
+## What Is MDX?
+
+MDX is Markdown with superpowers. You write prose and structure your content exactly as you would in standard Markdown — headings, lists, bold text, links — and then drop in SBGDS UI components anywhere you need richer formatting. Components look like HTML tags but are purpose-built for documentation.
+
+```mdx my-page.mdx
+# This is standard Markdown
+
+You can write paragraphs, **bold text**, and _italics_ as normal.
+
+<Note>
+  And drop in components like this anywhere in the file.
+</Note>
+```
+
+## Frontmatter Fields
+
+Every MDX page must begin with a frontmatter block — a YAML section enclosed in `---` delimiters. SBGDS reads this block to build your sidebar, set page metadata, and configure SEO.
+
+```mdx my-page.mdx
+---
+title: "Getting Started with the Payments API"
+sidebarTitle: "Quickstart"
+description: "Set up the Payments API in minutes. This guide walks you through authentication, your first request, and handling responses."
+icon: "bolt"
+---
+```
+
+| Field | Required | Description |
+|---|---|---|
+| `title` | ✅ | The full page title shown in the browser tab and at the top of the page. |
+| `description` | ✅ | A short summary shown in search results and link previews. |
+| `sidebarTitle` | Recommended | A shorter label shown in the sidebar. Defaults to `title` if omitted. |
+| `icon` | Optional | A [Lucide](https://lucide.dev/) or Font Awesome icon name shown next to the sidebar label. |
+
+<Tip>
+  Keep `sidebarTitle` to 1–3 words. Long sidebar labels make navigation harder to scan, especially in nested groups.
+</Tip>
+
+## Basic Markdown Formatting
+
+SBGDS supports all standard Markdown syntax. Use headings to give your page a clear hierarchy, and use formatting sparingly so emphasis retains its meaning.
+
+### Headings
+
+Use `##` for top-level sections and `###` for subsections. Avoid skipping heading levels — this keeps your page outline readable and accessible.
+
+```mdx
+## Installation
+
+### Prerequisites
+
+### Installing the Package
+```
+
+### Lists
+
+Use unordered lists for items without a natural order, and ordered lists for sequential steps.
+
+```mdx
+**Supported runtimes:**
+- Node.js 18+
+- Python 3.10+
+- Go 1.21+
+
+**To authenticate:**
+1. Generate an API key in the dashboard.
+2. Set the key as an environment variable.
+3. Pass the key in the `Authorization` header.
+```
+
+### Inline Formatting
+
+```mdx
+Use **bold** for key terms and UI labels.
+Use _italics_ for titles, technical terms on first use, or light emphasis.
+Use `inline code` for file names, variable names, and short code values.
+```
+
+### Links
+
+Link to external resources with standard Markdown link syntax, and use relative paths for internal links between your own pages.
+
+```mdx
+See the [official Node.js docs](https://nodejs.org) for installation help.
+
+For authentication details, see [Setting Up Auth](/guides/authentication).
+```
+
+## Embedding SBGDS Components
+
+Drop components directly into your MDX file. Components start with a capital letter and can wrap content or stand alone.
+
+### Notes, Tips, and Warnings
+
+Use callout components to surface important information without interrupting the flow of your prose.
+
+```mdx
+<Note>
+  Your API key is tied to your account. Do not commit it to source control.
+</Note>
+
+<Tip>
+  You can store your API key in a `.env` file and load it with `dotenv` in Node.js.
+</Tip>
+
+<Warning>
+  Rotating your API key will immediately invalidate the previous one. Update all
+  integrations before rotating.
+</Warning>
+```
+
+<Note>
+  Use `<Note>` for neutral information, `<Tip>` for helpful shortcuts, and `<Warning>` for actions that could cause data loss or breakage.
+</Note>
+
+### Steps
+
+Use `<Steps>` to walk users through a multi-step process. Each `<Step>` renders as a numbered item with a clear visual separator.
+
+```jsx
+<Steps>
+  <Step title="Install the SDK">
+    Run `npm install @sbgds/sdk` to add the SDK to your project.
+  </Step>
+  <Step title="Initialize the client">
+    Import and configure the SDK with your API key using
+    `new SBGDSClient({ apiKey: process.env.SBGDS_API_KEY })`.
+  </Step>
+  <Step title="Make your first request">
+    Call any endpoint to verify your setup is working correctly.
+  </Step>
+</Steps>
+```
+
+### Cards
+
+Use `<Card>` and `<CardGroup>` to create visual navigation or highlight related concepts.
+
+```mdx
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/guides/authentication">
+    Learn how to generate and use API keys to authenticate your requests.
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/guides/webhooks">
+    Set up real-time event notifications for your application.
+  </Card>
+</CardGroup>
+```
+
+### Tabs
+
+Use `<Tabs>` when the same concept has multiple parallel implementations — for example, code in different languages.
+
+```jsx
+<Tabs>
+  <Tab title="Node.js">
+    const response = await client.users.get('usr_123');
+  </Tab>
+  <Tab title="Python">
+    response = client.users.get("usr_123")
+  </Tab>
+  <Tab title="cURL">
+    curl https://api.sbgds.io/users/usr_123 -H "Authorization: Bearer $API_KEY"
+  </Tab>
+</Tabs>
+```
+
+### Accordions
+
+Use `<Accordion>` for supplementary details that most readers won't need on the first pass.
+
+```mdx
+<Accordion title="Advanced configuration options">
+  You can pass an `options` object to the client constructor to override
+  default timeouts, retry behavior, and base URLs for self-hosted deployments.
+</Accordion>
+```
+
+## Images and Media
+
+Add images using standard Markdown syntax. Place image files in the `images/` directory at the root of your repo and reference them with absolute paths.
+
+```mdx
+![A screenshot of the SBGDS dashboard showing the navigation editor](/images/dashboard-nav.png)
+```
+
+<Tip>
+  Always include descriptive alt text for images. It improves accessibility and helps search engines index your content.
+</Tip>
+
+For images that need captions or controlled sizing, use the `<Frame>` component:
+
+```mdx
+<Frame caption="The SBGDS navigation editor in the dashboard.">
+  ![SBGDS navigation editor](/images/dashboard-nav.png)
+</Frame>
+```
+
+## Internal Links Between Pages
+
+Reference other pages in your documentation using root-relative paths that match the page's file path. Omit the `.mdx` extension.
+
+```mdx
+To learn how to publish your site, see [Publishing Your Docs](/guides/publishing).
+```
+
+<Note>
+  SBGDS validates internal links at build time. If a link points to a page that doesn't exist, the build will warn you before the broken link reaches production.
+</Note>

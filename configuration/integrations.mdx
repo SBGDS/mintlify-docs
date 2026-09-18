@@ -1,0 +1,206 @@
+---
+title: "Integrations: GitHub, AI Tools, and Custom Domains"
+sidebarTitle: "Integrations"
+description: "Connect SBGDS to GitHub for automatic deployments, enable AI assistant integrations, configure analytics, and set up a custom domain."
+---
+
+SBGDS connects to the tools your team already uses — version control, AI assistants, analytics platforms, and your own domain — so your documentation workflow fits naturally into your existing stack. This guide covers each integration, what it enables, and how to set it up.
+
+---
+
+## GitHub Integration
+
+Connecting your SBGDS project to a GitHub repository enables automatic deployments every time you push to your default branch. No manual publishing step required.
+
+<Steps>
+  <Step title="Open your project dashboard">
+    Log in to your SBGDS dashboard and navigate to the project you want to connect. Click **Settings** in the left sidebar, then select the **Git** tab.
+  </Step>
+  <Step title="Authorize SBGDS on GitHub">
+    Click **Connect GitHub**. You'll be redirected to GitHub to install the SBGDS GitHub App. Grant access to the repositories you want SBGDS to read — you can choose all repositories or select specific ones.
+  </Step>
+  <Step title="Select your repository and branch">
+    Once authorized, return to the SBGDS dashboard. Select your repository from the dropdown and choose the branch that should trigger deployments (typically `main` or `docs`).
+  </Step>
+  <Step title="Configure the root directory (if needed)">
+    If your `docs.json` file lives in a subdirectory (for example, `docs/` inside a monorepo), enter that path in the **Root Directory** field. Leave it blank if `docs.json` is at the repository root.
+  </Step>
+  <Step title="Trigger your first deployment">
+    Click **Save and Deploy**. SBGDS clones your repository and builds the site. Subsequent pushes to the selected branch trigger new deployments automatically — usually live within 30 seconds.
+  </Step>
+</Steps>
+
+<Note>
+  SBGDS also creates a **preview deployment** for every pull request, giving you a shareable URL to review changes before they go live.
+</Note>
+
+### Branch protection and deploy previews
+
+SBGDS posts a deployment status check back to GitHub on every push. You can require this check to pass in your branch protection rules, preventing a broken docs build from merging alongside a code change.
+
+---
+
+## AI Assistant Integrations
+
+SBGDS surfaces your content directly in popular AI tools so your users can get contextual answers without leaving their workflow.
+
+### Contextual toolbar (ChatGPT, Claude, Perplexity)
+
+Enable the contextual toolbar by adding an `options` array to the `contextual` field in `docs.json`. When a reader selects text on any page, a floating toolbar offers one-click actions to send that selection to the AI assistant of their choice.
+
+```json docs.json
+{
+  "contextual": {
+    "options": ["chatgpt", "claude", "perplexity", "copy", "view"]
+  }
+}
+```
+
+| Option | What happens when clicked |
+|---|---|
+| `"chatgpt"` | Opens ChatGPT with the selected text pre-loaded as context |
+| `"claude"` | Opens Claude with the selected text pre-loaded as context |
+| `"perplexity"` | Runs a Perplexity search seeded with the selected text |
+| `"copy"` | Copies the selected text to the clipboard |
+| `"view"` | Opens the raw MDX source file on GitHub |
+
+Include only the options relevant to your audience — an empty array disables the toolbar entirely.
+
+---
+
+## MCP Server Integration
+
+The SBGDS MCP (Model Context Protocol) server exposes your documentation as a structured tool that AI coding assistants — such as Cursor, Claude Code, and GitHub Copilot — can query at inference time. This means developers get accurate, up-to-date answers from your actual docs while they code, without switching context.
+
+<Steps>
+  <Step title="Locate your MCP endpoint">
+    In your SBGDS dashboard, go to **Settings → Integrations → MCP Server**. Copy the MCP endpoint URL shown there — it's unique to your project.
+  </Step>
+  <Step title="Add the server to your AI tool's config">
+    Open your AI coding tool's MCP configuration file. For Cursor, this is `~/.cursor/mcp.json`. For Claude Code, it is `~/.claude/mcp_servers.json`. Add your SBGDS server as a new entry:
+
+    ```json mcp.json
+    {
+      "mcpServers": {
+        "acme-docs": {
+          "url": "https://mcp.sbgds.com/YOUR_PROJECT_ID",
+          "transport": "http"
+        }
+      }
+    }
+    ```
+  </Step>
+  <Step title="Restart your AI tool">
+    Save the config file and restart (or reload) your AI coding tool. The SBGDS documentation server should appear in the tool's MCP server list as active.
+  </Step>
+  <Step title="Verify the connection">
+    Ask your AI assistant a question that only your documentation would know — for example, the name of a proprietary config field. If it answers correctly with a citation, the integration is working.
+  </Step>
+</Steps>
+
+<Tip>
+  Publish your MCP endpoint URL in your README so contributors can add it to their local environment in seconds.
+</Tip>
+
+---
+
+## Analytics Integrations
+
+SBGDS supports several analytics providers that let you track page views, search queries, and user behavior across your documentation site.
+
+Add your analytics configuration to `docs.json` under the `analytics` key:
+
+```json docs.json
+{
+  "analytics": {
+    "ga4": {
+      "measurementId": "G-XXXXXXXXXX"
+    },
+    "posthog": {
+      "apiKey": "phc_xxxxxxxxxxxx"
+    },
+    "fathom": {
+      "siteId": "XXXXXXXX"
+    }
+  }
+}
+```
+
+| Provider | Key | Where to find the value |
+|---|---|---|
+| Google Analytics 4 | `ga4.measurementId` | GA4 → Admin → Data Streams |
+| PostHog | `posthog.apiKey` | PostHog → Project Settings → API Keys |
+| Fathom | `fathom.siteId` | Fathom → Sites → your site's ID |
+| Plausible | `plausible.domain` | Plausible → Settings → General |
+
+<Note>
+  Analytics scripts load after the page is fully interactive and respect the user's browser Do Not Track signal.
+</Note>
+
+---
+
+## Custom Domain Setup
+
+By default, your SBGDS site is published at `your-project.sbgds.site`. To serve it from your own domain (e.g. `docs.acme.com`), follow these steps.
+
+<Steps>
+  <Step title="Add your domain in the dashboard">
+    In your SBGDS dashboard, go to **Settings → Domains** and click **Add Domain**. Enter the full domain you want to use (e.g. `docs.acme.com`).
+  </Step>
+  <Step title="Create a CNAME record with your DNS provider">
+    Log in to your DNS provider (Cloudflare, Route 53, Namecheap, etc.) and create a `CNAME` record pointing your subdomain to SBGDS:
+
+    | Type | Name | Value |
+    |---|---|---|
+    | `CNAME` | `docs` | `cname.sbgds.site` |
+
+    DNS propagation typically takes between 5 minutes and 48 hours depending on your provider and TTL settings.
+  </Step>
+  <Step title="Verify and activate SSL">
+    Return to the SBGDS dashboard and click **Verify DNS**. Once the CNAME is detected, SBGDS automatically provisions a TLS certificate via Let's Encrypt. Your site will be reachable over HTTPS within a few minutes of verification.
+  </Step>
+</Steps>
+
+<Warning>
+  Do not use an `A` record pointing to an IP address. SBGDS infrastructure IPs can change without notice, and a `CNAME` to `cname.sbgds.site` will always resolve correctly.
+</Warning>
+
+---
+
+## Search Configuration
+
+SBGDS includes full-text search powered by an index built automatically at deploy time — no external service required. You can customize its behavior in `docs.json`:
+
+```json docs.json
+{
+  "search": {
+    "prompt": "Search the Acme docs…",
+    "indexing": {
+      "excludedPaths": ["/changelog", "/legal"]
+    }
+  }
+}
+```
+
+| Field | Purpose |
+|---|---|
+| `search.prompt` | Placeholder text shown in the search input |
+| `search.indexing.excludedPaths` | Array of path prefixes to exclude from the search index |
+
+For teams that prefer an external search provider, SBGDS also supports Algolia DocSearch:
+
+```json docs.json
+{
+  "search": {
+    "algolia": {
+      "appId": "YOUR_APP_ID",
+      "apiKey": "YOUR_SEARCH_API_KEY",
+      "indexName": "acme_docs"
+    }
+  }
+}
+```
+
+<Note>
+  When an Algolia config is present, it completely replaces the built-in SBGDS search index. Make sure your Algolia crawler is configured to index your custom domain.
+</Note>

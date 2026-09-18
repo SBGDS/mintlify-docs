@@ -1,0 +1,241 @@
+---
+title: "Customizing Your SBGDS Docs: Themes, Colors, and Fonts"
+sidebarTitle: "Customization"
+description: "Personalize your SBGDS site with custom themes, brand colors, logos, fonts, navbar links, and footer socials — all configured in docs.json."
+---
+
+SBGDS gives you full control over the look and feel of your documentation site through `docs.json`. You can switch themes, apply your brand colors, upload your logo, configure fonts, and set up navbar links — all without writing any CSS. Every customization lives in your repository, so changes are tracked, reviewable, and easy to roll back.
+
+## Choosing a Theme
+
+SBGDS ships with seven built-in themes, each with a distinct visual style. Set your theme using the `theme` key at the top level of `docs.json`.
+
+```json docs.json
+{
+  "theme": "maple"
+}
+```
+
+The available themes are:
+
+<CardGroup cols={3}>
+  <Card title="willow" icon="leaf">
+    Clean and minimal, with soft borders and generous whitespace.
+  </Card>
+  <Card title="luma" icon="sun">
+    Bright and modern, optimized for readability in light mode.
+  </Card>
+  <Card title="palm" icon="tree-palm">
+    Bold and tropical, with strong contrast and vivid accents.
+  </Card>
+  <Card title="almond" icon="circle">
+    Warm and neutral, with earthy tones and rounded elements.
+  </Card>
+  <Card title="aspen" icon="snowflake">
+    Cool and structured, with a crisp editorial feel.
+  </Card>
+  <Card title="maple" icon="tree-deciduous">
+    Rich and grounded, balancing warmth with professional clarity.
+  </Card>
+  <Card title="sequoia" icon="mountain">
+    Deep and dramatic, designed to make dark mode shine.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Preview each theme locally with `mint dev` before committing. Themes affect spacing, border radius, and typographic scale — not just color.
+</Tip>
+
+## Setting Brand Colors
+
+Define your primary brand color and its light/dark variants under the `colors` key. SBGDS uses these colors for links, buttons, active sidebar items, and interactive elements.
+
+```json docs.json
+{
+  "colors": {
+    "primary": "#7C3AED",
+    "light": "#A78BFA",
+    "dark": "#5B21B6"
+  }
+}
+```
+
+| Key | Usage |
+|---|---|
+| `primary` | Base accent color used throughout the site. |
+| `light` | Applied in dark mode for better contrast on dark backgrounds. |
+| `dark` | Applied in light mode for better contrast on light backgrounds. |
+
+<Note>
+  Use a color with enough contrast against both white and dark backgrounds. SBGDS applies `light` and `dark` automatically based on the reader's color scheme preference.
+</Note>
+
+## Logo and Favicon
+
+Set your logo and favicon under the `logo` and `favicon` keys. SBGDS accepts separate light and dark logo variants so your logo always looks sharp in both color schemes.
+
+```json docs.json
+{
+  "logo": {
+    "light": "/images/logo-light.svg",
+    "dark": "/images/logo-dark.svg",
+    "href": "https://www.yoursite.com"
+  },
+  "favicon": "/images/favicon.png"
+}
+```
+
+- **`logo.light`** — Displayed when the reader is in light mode.
+- **`logo.dark`** — Displayed when the reader is in dark mode.
+- **`logo.href`** — Makes the logo a clickable link, typically pointing to your marketing site.
+- **`favicon`** — Shown in browser tabs and bookmark lists. Use a 32×32 or 64×64 PNG or ICO.
+
+<Tip>
+  Use SVG files for your logo. They scale perfectly at any resolution and keep file sizes small.
+</Tip>
+
+## Fonts
+
+Customize your site's typography by specifying font families for headings and body text. SBGDS supports any font available on [Google Fonts](https://fonts.google.com/).
+
+```json docs.json
+{
+  "font": {
+    "headings": {
+      "family": "Inter"
+    },
+    "body": {
+      "family": "Inter"
+    }
+  }
+}
+```
+
+To use a display font for headings while keeping body text neutral:
+
+```json docs.json
+{
+  "font": {
+    "headings": {
+      "family": "Cal Sans"
+    },
+    "body": {
+      "family": "Inter"
+    }
+  }
+}
+```
+
+<Note>
+  SBGDS automatically loads the specified fonts from Google Fonts. You don't need to add any `<link>` tags or import statements.
+</Note>
+
+## Navbar Links and Primary CTA
+
+Add links to your navbar to surface important destinations — like your dashboard, blog, or community — without burying them in the sidebar. You can also highlight one link as a primary call-to-action button.
+
+```json docs.json
+{
+  "topbarLinks": [
+    {
+      "name": "Blog",
+      "url": "https://sbgds.io/blog"
+    },
+    {
+      "name": "Community",
+      "url": "https://discord.gg/sbgds"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://app.sbgds.io/signup"
+  }
+}
+```
+
+The `topbarCtaButton` renders as a prominent button in the top-right corner of the navbar — ideal for a sign-up or login link.
+
+## Footer Socials
+
+Add social media links to your site footer using the `footerSocials` key. SBGDS renders these as icon links using the platform name as the icon identifier.
+
+```json docs.json
+{
+  "footerSocials": {
+    "github": "https://github.com/your-org",
+    "twitter": "https://twitter.com/your-org",
+    "linkedin": "https://linkedin.com/company/your-org",
+    "discord": "https://discord.gg/sbgds",
+    "youtube": "https://youtube.com/@your-org"
+  }
+}
+```
+
+Supported platform keys include: `github`, `twitter`, `linkedin`, `discord`, `youtube`, `instagram`, `facebook`, `slack`, and `website`.
+
+## Custom Domains
+
+By default, your site is published at `your-project.sbgds.io`. You can serve it from your own domain by adding a `subdomain` or `customDomain` entry and updating your DNS.
+
+```json docs.json
+{
+  "customDomain": "docs.yoursite.com"
+}
+```
+
+<Steps>
+  <Step title="Add your custom domain in docs.json">
+    Set the `customDomain` field to the subdomain you want to use (e.g. `docs.yoursite.com`).
+  </Step>
+  <Step title="Create a CNAME record">
+    In your DNS provider, add a `CNAME` record pointing your subdomain to `hosting.sbgds.io`.
+
+    | Type | Name | Value |
+    |---|---|---|
+    | CNAME | `docs` | `hosting.sbgds.io` |
+  </Step>
+  <Step title="Wait for DNS propagation">
+    DNS changes typically propagate within a few minutes but can take up to 48 hours. SBGDS automatically provisions an SSL certificate once the domain resolves correctly.
+  </Step>
+</Steps>
+
+<Warning>
+  Do not set a custom domain using an apex/root domain (e.g. `yoursite.com`). Use a subdomain such as `docs.yoursite.com` instead. Apex domains require special ALIAS or ANAME records that not all DNS providers support.
+</Warning>
+
+## Putting It All Together
+
+Here's a complete `docs.json` customization block combining all of the above settings:
+
+```json docs.json
+{
+  "theme": "maple",
+  "colors": {
+    "primary": "#7C3AED",
+    "light": "#A78BFA",
+    "dark": "#5B21B6"
+  },
+  "logo": {
+    "light": "/images/logo-light.svg",
+    "dark": "/images/logo-dark.svg",
+    "href": "https://www.yoursite.com"
+  },
+  "favicon": "/images/favicon.png",
+  "font": {
+    "headings": { "family": "Cal Sans" },
+    "body": { "family": "Inter" }
+  },
+  "topbarLinks": [
+    { "name": "Blog", "url": "https://yoursite.com/blog" }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://app.yoursite.com/signup"
+  },
+  "footerSocials": {
+    "github": "https://github.com/your-org",
+    "twitter": "https://twitter.com/your-org"
+  },
+  "customDomain": "docs.yoursite.com"
+}
+```

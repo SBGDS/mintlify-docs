@@ -1,0 +1,213 @@
+---
+title: "Troubleshooting Common SBGDS Docs Issues and Fixes"
+sidebarTitle: "Troubleshooting"
+description: "Step-by-step fixes for the most common SBGDS issues: 404 pages, local preview failures, broken links, image loading errors, and custom domain problems."
+---
+
+Most SBGDS problems come down to a small set of recurring causes: a path mismatch, a missing entry in `docs.json`, or a file that hasn't been committed. This guide covers the issues our support team hears about most often, with clear steps to resolve each one.
+
+---
+
+## Common Issues
+
+<AccordionGroup>
+  <Accordion title="Page shows as 404 after publishing">
+    **Symptom:** You visit a page URL on your live site and see a 404 error, even though the `.mdx` file exists in your repository.
+
+    **Likely cause:** The page is not registered in the `navigation` array inside `docs.json`. SBGDS only renders and routes pages that appear in the navigation configuration — an `.mdx` file alone is not enough.
+
+    **Fix:**
+
+    1. Open `docs.json` and locate the `navigation` array.
+    2. Find the group where the page should appear and add its path (without the `.mdx` extension):
+
+       ```json docs.json
+       {
+         "navigation": [
+           {
+             "group": "Guides",
+             "pages": [
+               "guides/quickstart",
+               "guides/your-missing-page"
+             ]
+           }
+         ]
+       }
+       ```
+
+    3. Commit and push the change. Your deployment should complete within 30 seconds and the page will resolve correctly.
+
+    <Note>
+      Paths in the `navigation` array are case-sensitive and must exactly match the file path relative to your docs root. A file at `guides/MyPage.mdx` must be registered as `"guides/MyPage"`, not `"guides/mypage"`.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Local preview not starting (mint dev fails)">
+    **Symptom:** Running `mint dev` exits immediately or throws an error such as `Cannot find module`, `EADDRINUSE`, or `SyntaxError`.
+
+    **Likely causes and fixes:**
+
+    <Steps>
+      <Step title="Check your Node.js version">
+        SBGDS requires Node.js **18 or later**. Run `node --version` to check. If you're on an older version, upgrade via [nodejs.org](https://nodejs.org) or your version manager (`nvm use 18`).
+      </Step>
+      <Step title="Update the SBGDS CLI">
+        An outdated CLI version is the most common cause of cryptic startup errors. Update it with:
+
+        ```bash
+        npm install -g mint@latest
+        ```
+
+        Then run `mint dev` again.
+      </Step>
+      <Step title="Resolve the port conflict">
+        If you see `EADDRINUSE: address already in use :::3000`, port 3000 is occupied by another process. Start the dev server on a different port:
+
+        ```bash
+        mint dev --port 3001
+        ```
+      </Step>
+      <Step title="Validate your docs.json syntax">
+        A JSON syntax error in `docs.json` prevents the dev server from starting. Run the following to check for errors:
+
+        ```bash
+        npx mint validate
+        ```
+
+        The output identifies the exact line and character causing the parse failure.
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="Broken links warning in validation">
+    **Symptom:** Running `mint validate` (or checking the build log) shows warnings like `Broken link: /guides/old-page` or `Href not found`.
+
+    **Likely cause:** An internal link in an `.mdx` file or in `docs.json` points to a path that no longer exists — typically after renaming or deleting a page.
+
+    **Fix:**
+
+    1. Note the broken link path from the validation output.
+    2. Search your repository for occurrences of that path:
+
+       ```bash
+       grep -r "old-page" .
+       ```
+
+    3. Update each reference to the correct new path.
+    4. If the old URL must stay accessible (for example, it's been shared publicly), add a redirect in `docs.json`:
+
+       ```json docs.json
+       {
+         "redirects": [
+           {
+             "source": "/guides/old-page",
+             "destination": "/guides/new-page",
+             "permanent": true
+           }
+         ]
+       }
+       ```
+
+    <Tip>
+      Run `mint validate` as part of your CI pipeline to catch broken links before they reach production. Add it as a step in your GitHub Actions workflow to block merges with broken references.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Images not loading">
+    **Symptom:** Images render as broken icons on the live site or in local preview, even though the image files are present in your repository.
+
+    **Likely causes and fixes:**
+
+    **Wrong path format:** SBGDS resolves image paths relative to the docs root. Use root-relative paths starting with `/` rather than relative paths:
+
+    ```mdx
+    {/* ✅ Correct — root-relative path */}
+    ![Architecture diagram](/images/architecture.png)
+
+    {/* ❌ Incorrect — relative path that breaks when page moves */}
+    ![Architecture diagram](../images/architecture.png)
+    ```
+
+    **File not committed:** If the image loads locally but not on the live site, the file may exist on your machine but not be committed to Git. Run `git status` to check for untracked files and commit them.
+
+    **Case mismatch:** File systems on macOS are case-insensitive, but the Linux servers that run SBGDS deployments are not. A file named `Architecture.PNG` will not be found by a path referencing `architecture.png`. Match the casing exactly.
+
+    <Warning>
+      Avoid spaces in image filenames. Paths with spaces require URL encoding (`%20`) and are a frequent source of silent failures. Use hyphens instead: `system-architecture.png`.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Navigation item not appearing in sidebar">
+    **Symptom:** You've added a page entry to `docs.json` but the sidebar item doesn't appear after reloading the local preview or deploying.
+
+    **Likely causes:**
+
+    - The entry was added to the wrong level of the `navigation` array (inside a sub-group instead of the intended parent group, or vice versa).
+    - The `docs.json` change was not saved before running `mint dev`.
+    - There is a JSON syntax error elsewhere in `docs.json` that prevents the entire file from parsing.
+
+    **Fix:**
+
+    1. Open `docs.json` and confirm the path appears in the correct `group.pages` array.
+    2. Run `npx mint validate` to rule out syntax errors.
+    3. Confirm the `.mdx` file exists at the exact path specified (case-sensitive, no `.mdx` extension in the navigation entry).
+    4. Stop and restart `mint dev` — occasionally the dev server file watcher misses edits to `docs.json` itself.
+
+    ```json docs.json
+    {
+      "navigation": [
+        {
+          "group": "Reference",
+          "pages": [
+            "reference/overview",
+            "reference/api-keys"
+          ]
+        }
+      ]
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Custom domain not resolving">
+    **Symptom:** After adding a custom domain in the dashboard and creating a DNS record, the domain still shows an error or the default SBGDS URL instead of your site.
+
+    **Likely causes and fixes:**
+
+    **DNS not yet propagated:** DNS changes can take anywhere from 5 minutes to 48 hours to propagate globally. Check current propagation status using [dnschecker.org](https://dnschecker.org) — enter your subdomain and verify the `CNAME` record is resolving to `cname.sbgds.site` from multiple locations.
+
+    **Wrong record type:** SBGDS requires a `CNAME` record, not an `A` record. If you created an `A` record, delete it and create a `CNAME` instead:
+
+    | Type | Name | Value |
+    |---|---|---|
+    | `CNAME` | `docs` | `cname.sbgds.site` |
+
+    **Cloudflare proxy enabled:** If your domain is on Cloudflare and the proxy (orange cloud) is enabled, SBGDS cannot issue a TLS certificate. Set the DNS record to **DNS only** (grey cloud) during initial verification. You can re-enable the proxy after the certificate is issued.
+
+    **Domain not verified in dashboard:** After updating DNS, return to **Settings → Domains** in the SBGDS dashboard and click **Verify DNS**. The certificate is only provisioned after you trigger verification and the check passes.
+
+    <Warning>
+      If your domain was previously pointing to a different host, residual cache at the ISP or browser level can cause it to keep resolving to the old destination. Clear your browser cache and try from a different network or use an incognito window.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Still Stuck?
+
+If the steps above haven't resolved your issue, the SBGDS support team is here to help.
+
+<CardGroup cols={2}>
+  <Card title="Email Support" icon="envelope">
+    Send a description of your issue — including your project URL, any error messages, and the steps you've already tried — to [support@sbgds.com](mailto:support@sbgds.com). Typical response time is one business day.
+  </Card>
+  <Card title="Community Discord" icon="discord">
+    Join the SBGDS community on Discord to ask questions, share solutions, and connect with other teams using the platform. Invite link is available in your project dashboard under **Help**.
+  </Card>
+  <Card title="Build Logs" icon="scroll">
+    For deployment failures, check the full build log in your SBGDS dashboard under **Deployments → [your deploy] → Logs**. The log often pinpoints the exact file and line causing the build to fail.
+  </Card>
+  <Card title="Status Page" icon="signal">
+    If SBGDS itself appears to be having issues, check [status.sbgds.com](https://status.sbgds.com) for incident reports and real-time system health. You can subscribe to email or Slack notifications for any future incidents.
+  </Card>
+</CardGroup>
