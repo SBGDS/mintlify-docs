@@ -1,1 +1,12 @@
 name: weekly Figma Screenshot Sync
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Run screenshot sync here"
