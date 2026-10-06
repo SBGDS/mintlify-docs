@@ -7,10 +7,13 @@
     "light": "#0051FF",
     "dark": "#0c0c0c"
   },
-  "favicon": "https://media.brand.dev/483ee27f-08fb-4d32-842d-86b4c40f9fb4.png",
+  "favicon": {
+    "light": "/images/Property1=StandardBank.png",
+    "dark": "/images/Property1=StandardBank.png"
+  },
   "logo": {
-    "light": "https://media.brand.dev/07fcb57b-76a5-49f6-abdb-740da69c791f.svg",
-    "dark": "https://media.brand.dev/07fcb57b-76a5-49f6-abdb-740da69c791f.svg"
+    "light": "/images/BusinessUnit=Group,Oncolour=false.svg",
+    "dark": "/images/BusinessUnit=Group,Oncolour=true.svg"
   },
   "navbar": {
     "links": [
@@ -28,51 +31,46 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
-        "groups": [
-          {
-            "group": "Get Started",
-            "pages": [
-              "introduction",
-              "quickstart",
-              "core-concepts"
-            ]
-          },
-          {
-            "group": "Guides",
-            "pages": [
-              "guides/writing-content",
-              "guides/navigation",
-              "guides/customization",
-              "guides/publishing"
-            ]
-          },
-          {
-            "group": "Components",
-            "pages": [
-              "components/overview",
-              "components/callouts",
-              "components/code-blocks",
-              "components/cards",
-              "components/empty-state",
-              "badge"
-            ]
-          },
-          {
-            "group": "Configuration",
-            "pages": [
-              "configuration/settings",
-              "configuration/branding",
-              "configuration/integrations"
-            ]
-          },
-          {
-            "group": "Help",
-            "pages": [
-              "help/faq",
-              "help/troubleshooting"
-            ]
-          }
+        "tab": "Components",
+        "pages": [
+          "components/overview",
+          "components/callouts",
+          "components/code-blocks",
+          "components/cards",
+          "components/empty-state",
+          "badge"
+        ]
+      },
+      {
+        "tab": "Tokens",
+        "pages": [
+          "tokens"
+        ]
+      },
+      {
+        "tab": "Configuration",
+        "pages": [
+          "configuration/settings",
+          "configuration/branding",
+          "configuration/integrations"
+        ]
+      },
+      {
+        "tab": "Help",
+        "pages": [
+          "help/faq",
+          "help/troubleshooting"
+        ]
+      },
+      {
+        "tab": "Documentation"
+      },
+      {
+        "tab": "Get Started",
+        "pages": [
+          "introduction",
+          "quickstart",
+          "core-concepts"
         ]
       },
       {
@@ -93,16 +91,38 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Guides",
+        "pages": [
+          "guides/writing-content",
+          "guides/navigation",
+          "guides/customization",
+          "guides/publishing"
+        ]
+      },
+      {
+        "tab": "Templates",
+        "pages": [
+          "onboarding"
+        ]
       }
     ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/sbgds",
       "github": "https://github.com/SBGDS"
     }
   },
   "icons": {
     "library": "lucide"
+  },
+  "fonts": {
+    "family": "Inter"
+  },
+  "styling": {
+    "eyebrows": "section",
+    "codeblocks": "system",
+    "latex": true
   }
 }
