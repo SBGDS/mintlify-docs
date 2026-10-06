@@ -2,6 +2,10 @@
 title: "Code Blocks: Syntax Highlighting and Features in SBGDS"
 sidebarTitle: "Code Blocks"
 description: "Display syntax-highlighted code with filenames, line numbers, diffs, focus markers, and multi-language tabs using CodeGroup in your SBGDS documentation."
+icon:
+  name: "blocks"
+  style: "regular"
+  library: "lucide"
 ---
 
 Code blocks in SBGDS go far beyond basic syntax highlighting. You can attach filenames, enable line numbers, highlight or focus specific lines, annotate additions and deletions with diff markers, group multiple snippets into a tabbed `<CodeGroup>`, collapse long files behind an expand toggle, and wrap long lines for readability — all through lightweight meta options written directly on the opening fence. This page documents every feature with concrete examples you can copy straight into your MDX files.
