@@ -15,8 +15,9 @@ Cards are the primary tool for building visual navigation hubs, feature showcase
 A `<Card>` accepts a `title`, an optional `icon`, an optional `href` for linking, and optional body text as children. At minimum, provide a `title`.
 
 ```mdx
-<Card title="Quick Start" icon="rocket" href="/quickstart">
-  Get your first documentation site live in under five minutes.
+<Card title="Card title" icon="text-align-start" href="/components/columns">
+  This is how you use a card with an icon and a link. Clicking this card
+  brings you to the Columns page.
 </Card>
 ```
 
