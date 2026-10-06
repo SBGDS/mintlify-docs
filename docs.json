@@ -48,6 +48,12 @@
             ]
           },
           {
+            "group": "Templates",
+            "pages": [
+              "onboarding"
+            ]
+          },
+          {
             "group": "Components",
             "pages": [
               "components/overview",
@@ -56,6 +62,12 @@
               "components/cards",
               "components/empty-state",
               "badge"
+            ]
+          },
+          {
+            "group": "Tokens",
+            "pages": [
+              "tokens"
             ]
           },
           {
