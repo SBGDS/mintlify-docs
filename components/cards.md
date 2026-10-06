@@ -1,7 +1,11 @@
 ---
-title: "Card and CardGroup Components for SBGDS Documentation"
+title: "Group Components for SBGDS Documentation"
 sidebarTitle: "Cards"
 description: "Build visual navigation grids and feature showcases using the Card and CardGroup components, with icons, links, and flexible column layouts in SBGDS."
+icon:
+  name: "credit-card"
+  style: "regular"
+  library: "lucide"
 ---
 
 Cards are the primary tool for building visual navigation hubs, feature showcases, and concept overviews in SBGDS. A `<Card>` presents a titled, optionally linked panel with an icon and description text. A `<CardGroup>` arranges multiple cards into a responsive grid. Together, they replace walls of bullet-point links with scannable, approachable entry points that guide readers to the right place quickly. Use cards whenever you want readers to choose a path, discover a category, or understand a set of related features at a glance.

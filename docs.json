@@ -1,10 +1,10 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "luma",
+  "theme": "maple",
   "name": "SBGDS",
   "colors": {
-    "primary": "#1be49c",
-    "light": "#0c8c5c",
+    "primary": "#0033AA",
+    "light": "#0051FF",
     "dark": "#0c0c0c"
   },
   "favicon": "https://media.brand.dev/483ee27f-08fb-4d32-842d-86b4c40f9fb4.png",
@@ -99,5 +99,8 @@
       "x": "https://x.com/sbgds",
       "github": "https://github.com/SBGDS"
     }
+  },
+  "icons": {
+    "library": "lucide"
   }
 }
