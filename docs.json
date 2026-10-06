@@ -54,6 +54,7 @@
               "components/callouts",
               "components/code-blocks",
               "components/cards",
+              "components/empty-state",
               "badge"
             ]
           },

@@ -1,0 +1,134 @@
+---
+title: "Empty state"
+description: "Use the Empty state component to explain why a screen has no content and give users a clear next step, such as linking accounts or opening a new account."
+---
+
+{/* figma-tracking: https://www.figma.com/design/XLSj6l94LZBPJ7gsN79poz/%F0%9F%92%99-Future-Tokens?node-id=328-493#1954971260 — the weekly automation checks this frame (node 328:493, page "Component") for changes. Update this page when the frame changes. */}
+
+The Empty state component fills a screen when there is nothing to show yet. It pairs an alert avatar and a short message with up to two actions, so users know why the screen is empty and what to do next.
+
+<Info>
+  Source: the **Empty state** component on the **Component** page of the Future Tokens Figma file (node `328:493`).
+</Info>
+
+## When to use it
+
+Use the Empty state component when:
+
+- A screen has no data because the user hasn't linked or created anything yet. For example, a dashboard with no linked bank accounts, share trading, insurance, or investment portfolios.
+- You want to point users to the action that populates the screen.
+
+Don't use it for:
+
+- Loading states. Show a loader instead.
+- Errors that block the user. Show an error message with a retry action.
+- Short lists with only a few items. Show the items.
+
+## Anatomy
+
+| Part | Component | Purpose |
+|---|---|---|
+| Icon | `avatar_alert` (80 × 80) | Draws attention to the message |
+| Headline | Text layer | Says what the user can do here |
+| Explanation | Text layer | Explains how the user can populate, link, or update the screen |
+| Primary action | `button_secondary` | Main call to action. The default label is "LINK ACCOUNTS" |
+| Secondary action | `button_tertiary` | Alternative action. The default label is "OPEN AN ACCOUNT" |
+
+## Variants and states
+
+The Empty state has a single variant with no component properties. Its states come from the buttons it contains.
+
+| Element | Property | Options |
+|---|---|---|
+| Empty state | — | One variant |
+| `button_secondary` | state | `default`, `disabled`, `loading` |
+| `button_secondary` | manual resize | `true`, `false` |
+| `button_secondary` | icon, icon type, label | Boolean, instance swap, text |
+| `button_tertiary` | state | `default`, `disabled`, `loading` |
+| `button_tertiary` | icon, icon type, label | Boolean, instance swap, text |
+
+<Note>
+  The Figma frame only shows the `default` button state. Confirm with the design team before you ship the `disabled` or `loading` states inside an Empty state.
+</Note>
+
+## Specifications
+
+The component is 360 × 407 and uses a single column.
+
+### Spacing
+
+| Measurement | Value |
+|---|---|
+| Component size | 360 × 407 |
+| Horizontal padding | 32 |
+| Top padding | 40 |
+| Bottom padding | 24 |
+| Content width | 296 |
+| Icon to headline | 24 |
+| Headline block to explanation block | 24 |
+| Explanation to buttons | 24 |
+| Gap between buttons | 8 |
+| Icon size | 80 × 80, centered |
+| `button_secondary` height | 48 |
+| `button_tertiary` height | 36 |
+
+Both buttons fill the full content width (296).
+
+### Colors
+
+| Token | Value | Use |
+|---|---|---|
+| `--color-background-surface-default` | `#ffffff` | Background |
+| `--color-text-primary` | `#02070d` | Text |
+| `--color-action-primary` | `#0051ff` | Button actions |
+| `--color-border-focus` | `#0051ff` | Focus indicator |
+
+### Typography
+
+| Token | Font | Size / weight | Line height |
+|---|---|---|---|
+| `16/m_regular_body_1` | Benton Sans Pro | 16 / 400 | 1.3 |
+| `14/s_regular_body_2` | Benton Sans Pro | 14 / 400 | 1.3 |
+| `label-m` | Benton Sans Pro | 14 / 500 | 1.4 |
+
+<Note>
+  The Figma variables list these tokens for the frame but doesn't say which text layer uses which. Check the text styles in Figma before you map them in code.
+</Note>
+
+## Accessibility requirements
+
+- **Contrast.** Text must meet WCAG 2.1 AA: 4.5:1 for body text. Check `--color-text-primary` (`#02070d`) on `--color-background-surface-default` (`#ffffff`), which has very high contrast.
+- **Focus.** Both buttons must show a visible focus ring using `--color-border-focus`. Keep the tab order top to bottom: primary action, then secondary action.
+- **Touch targets.** `button_secondary` is 48 high and meets the 44 × 44 minimum. `button_tertiary` is 36 high, which is below 44. Add padding or hit-area to reach 44 on touch devices.
+- **Icon.** Treat the alert avatar as decorative. Hide it from assistive technology (`aria-hidden="true"`) because the text already conveys the message.
+- **Text.** Don't convey the empty state by color or icon alone. Keep the headline and explanation as real text.
+- **Announcements.** If the empty state replaces content after a user action, announce the change with a polite live region.
+- **Labels.** Button labels must describe the action. The Figma defaults are uppercase, so write them in sentence case in code and apply the uppercase style with CSS, so screen readers don't read letter by letter.
+
+## Usage examples
+
+### Dashboard with no linked accounts
+
+Use the default content when the user has not linked any accounts.
+
+- **Headline:** Link your bank accounts, Online Share Trading, insurance and investment portfolios here.
+- **Explanation:** Explain how the user can populate, link, or update this screen.
+- **Primary action:** LINK ACCOUNTS
+- **Secondary action:** OPEN AN ACCOUNT
+
+### Content guidelines
+
+<CardGroup cols={2}>
+  <Card title="Do" icon="check">
+    Say what the user can do, then offer one clear primary action.
+  </Card>
+  <Card title="Don't" icon="x">
+    Don't use more than two actions or write vague labels like "Click here".
+  </Card>
+</CardGroup>
+
+## Related components
+
+- `button_secondary`
+- `button_tertiary`
+- `avatar_alert`
