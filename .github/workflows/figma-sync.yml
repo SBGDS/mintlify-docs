@@ -1,0 +1,51 @@
+name: Sync Figma docs
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: figma-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sync tracked Figma frames
+        id: sync
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+        run: node .github/scripts/figma-sync.mjs
+
+      - name: Open pull request
+        # Skips silently when nothing changed. Failed frames fail the sync step above,
+        # but a failure never blocks PRs for frames that did update (see "if: always()").
+        if: always() && steps.sync.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: figma-sync
+          delete-branch: true
+          commit-message: 'Sync Figma screenshots and specs'
+          title: 'Sync Figma screenshots and specs'
+          body: |
+            Automated weekly sync of tracked Figma frames.
+
+            Frames are tracked with `{/* figma-frame: FILE_KEY/NODE_ID */}` comments in `.mdx` files.
+            Only frames whose Figma content changed since the last sync are included.
+            Review the updated screenshots and the generated spec tables before merging.
+          add-paths: |
+            **/*.mdx
+            images/**
+            .github/figma-sync-state.json
