@@ -7,6 +7,10 @@ description: "Use the Empty state component to explain why a screen has no conte
 
 The Empty state component fills a screen when there is nothing to show yet. It pairs an alert avatar and a short message with up to two actions, so users know why the screen is empty and what to do next.
 
+<Frame caption="The Empty state component at 360 × 407.">
+  <img src="/images/empty-state.png" alt="Empty state component with an alert icon, a headline, an explanation, a secondary button and a tertiary button" width="360" />
+</Frame>
+
 <Info>
   Source: the **Empty state** component on the **Component** page of the Future Tokens Figma file (node `328:493`).
 </Info>
@@ -85,14 +89,14 @@ Both buttons fill the full content width (296).
 
 ### Typography
 
-| Token | Font | Size / weight | Line height |
-|---|---|---|---|
-| `16/m_regular_body_1` | Benton Sans Pro | 16 / 400 | 1.3 |
-| `14/s_regular_body_2` | Benton Sans Pro | 14 / 400 | 1.3 |
-| `label-m` | Benton Sans Pro | 14 / 500 | 1.4 |
+| Element | Token | Font | Size / weight | Line height |
+|---|---|---|---|---|
+| Headline | `16/m_regular_body_1` | Benton Sans Pro | 16 / 400 | 1.3 |
+| Explanation | `14/s_regular_body_2` | Benton Sans Pro | 14 / 400 | 1.3 |
+| Button labels | `label-m` | Benton Sans Pro | 14 / 500 | 1.4 |
 
 <Note>
-  The Figma variables list these tokens for the frame but doesn't say which text layer uses which. Check the text styles in Figma before you map them in code.
+  I matched tokens to elements from the rendered frame, not from the layer styles. Confirm in Figma before you map them in code.
 </Note>
 
 ## Accessibility requirements
