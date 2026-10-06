@@ -53,7 +53,8 @@
               "components/overview",
               "components/callouts",
               "components/code-blocks",
-              "components/cards"
+              "components/cards",
+              "badge"
             ]
           },
           {
