@@ -29,9 +29,9 @@
     }
   },
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Components",
+        "group": "Components",
         "pages": [
           "components/overview",
           "components/callouts",
@@ -42,13 +42,13 @@
         ]
       },
       {
-        "tab": "Tokens",
+        "group": "Tokens",
         "pages": [
           "tokens"
         ]
       },
       {
-        "tab": "Configuration",
+        "group": "Configuration",
         "pages": [
           "configuration/settings",
           "configuration/branding",
@@ -56,17 +56,18 @@
         ]
       },
       {
-        "tab": "Help",
+        "group": "Help",
         "pages": [
           "help/faq",
           "help/troubleshooting"
         ]
       },
       {
-        "tab": "Documentation"
+        "group": "Documentation",
+        "pages": []
       },
       {
-        "tab": "Get Started",
+        "group": "Get Started",
         "pages": [
           "introduction",
           "quickstart",
@@ -74,8 +75,8 @@
         ]
       },
       {
-        "tab": "API Reference",
-        "groups": [
+        "group": "API Reference",
+        "pages": [
           {
             "group": "Overview",
             "pages": [
@@ -93,7 +94,7 @@
         ]
       },
       {
-        "tab": "Guides",
+        "group": "Guides",
         "pages": [
           "guides/writing-content",
           "guides/navigation",
@@ -102,9 +103,15 @@
         ]
       },
       {
-        "tab": "Templates",
+        "group": "Templates",
         "pages": [
           "onboarding"
+        ]
+      },
+      {
+        "group": "Authenticated",
+        "pages": [
+          "design"
         ]
       }
     ]
