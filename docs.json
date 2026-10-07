@@ -33,26 +33,45 @@
       {
         "group": "Components",
         "pages": [
+          {
+            "group": "Documentation",
+            "pages": []
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/settings",
+              "configuration/branding",
+              "configuration/integrations"
+            ]
+          },
+          {
+            "group": "Tokens",
+            "pages": [
+              "tokens"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/writing-content",
+              "guides/navigation",
+              "guides/customization",
+              "guides/publishing"
+            ]
+          },
           "components/overview",
           "components/callouts",
           "components/code-blocks",
           "components/cards",
           "components/empty-state",
-          "badge"
-        ]
-      },
-      {
-        "group": "Tokens",
-        "pages": [
-          "tokens"
-        ]
-      },
-      {
-        "group": "Configuration",
-        "pages": [
-          "configuration/settings",
-          "configuration/branding",
-          "configuration/integrations"
+          "badge",
+          {
+            "group": "Templates",
+            "pages": [
+              "onboarding"
+            ]
+          }
         ]
       },
       {
@@ -61,10 +80,6 @@
           "help/faq",
           "help/troubleshooting"
         ]
-      },
-      {
-        "group": "Documentation",
-        "pages": []
       },
       {
         "group": "Get Started",
@@ -91,21 +106,6 @@
               "api-reference/deployments"
             ]
           }
-        ]
-      },
-      {
-        "group": "Guides",
-        "pages": [
-          "guides/writing-content",
-          "guides/navigation",
-          "guides/customization",
-          "guides/publishing"
-        ]
-      },
-      {
-        "group": "Templates",
-        "pages": [
-          "onboarding"
         ]
       },
       {
